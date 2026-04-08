@@ -1,7 +1,7 @@
 FROM richarvey/nginx-php-fpm:latest
 
-# 1. Instalar Node.js y NPM (necesarios para Vue/Inertia)
-RUN apk add --update nodejs npm
+# 1. Instalar dependencias necesarias y Node.js 22
+RUN apk add --update --no-cache nodejs npm
 
 # 2. Copiar los archivos del proyecto
 COPY . .
@@ -16,7 +16,8 @@ ENV SKIP_COMPOSER 1
 RUN composer install --no-dev
 RUN php artisan ziggy:generate
 
-# 5. Instalar dependencias de JS y compilar assets con Vite
+# 5. Instalar dependencias de JS y compilar con Vite
+# Limpiamos caché de npm para evitar conflictos de versiones previas
 RUN npm install
 RUN npm run build
 
