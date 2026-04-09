@@ -5,6 +5,7 @@ import { ref, computed, onMounted } from 'vue';
 
 const props = defineProps({
     fechas: Array,
+    fechasConDatos: Array,
 });
 
 const currentDate = ref(new Date());
@@ -41,7 +42,7 @@ const calendarDays = computed(() => {
         if (dayNumber > 0 && dayNumber <= daysInMonth.value) {
             const date = new Date(currentYear.value, currentMonth.value, dayNumber);
             const dateString = date.toISOString().split('T')[0];
-            const hasData = props.fechas.includes(dateString);
+            const hasData = props.fechasConDatos.includes(dateString);
             days.push({
                 day: dayNumber,
                 date: dateString,
@@ -64,8 +65,8 @@ const nextMonth = () => {
 };
 
 const selectDay = (day) => {
-    if (day && day.hasData) {
-        router.visit(`/hoy?fecha=${day.date}`);
+    if (day) {
+        router.get('/hoy', { fecha: day.date });
     }
 };
 </script>
@@ -109,17 +110,17 @@ const selectDay = (day) => {
                                 <div v-if="day" 
                                      :class="[
                                          'cursor-pointer rounded-full w-8 h-8 mx-auto flex items-center justify-center text-sm',
-                                         day.hasData ? 'bg-blue-500 text-white hover:bg-blue-600' : 'text-gray-400',
+                                         day.hasData ? 'bg-blue-500 text-white hover:bg-blue-600' : 'hover:bg-gray-200 text-gray-700',
                                          day.isToday ? 'ring-2 ring-blue-300' : ''
                                      ]"
-                                     @click="selectDay(day)">
+                                     @click.prevent="selectDay(day)">
                                     {{ day.day }}
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-4 text-sm text-gray-600">
-                            <p>Días con registros están marcados en azul. Haz clic en un día para ver la dieta.</p>
+                            <p>Días resaltados en azul tienen registros. Todos los días son accesibles.</p>
                         </div>
                     </div>
                 </div>

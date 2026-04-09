@@ -134,17 +134,30 @@ class CaloriasController extends Controller
     {
         $user = auth()->user();
         $currentMonth = Carbon::now()->startOfMonth();
-        $endOfMonth = Carbon::now()->endOfMonth();
+        $endOfMonth = Carbon::now()->addMonths(2)->endOfMonth();
 
-        $fechas = Consumo::where('user_id', $user->id)
+        // Obtener fechas con datos
+        $fechasConDatos = Consumo::where('user_id', $user->id)
             ->whereBetween('fecha', [$currentMonth, $endOfMonth])
             ->select('fecha')
             ->distinct()
             ->orderBy('fecha')
-            ->pluck('fecha');
+            ->pluck('fecha')
+            ->toArray();
+
+        // Generar todos los días del mes actual y los próximos 2 meses
+        $todasLasFechas = [];
+        $start = $currentMonth->copy();
+        $end = $endOfMonth->copy();
+        
+        while ($start <= $end) {
+            $todasLasFechas[] = $start->toDateString();
+            $start->addDay();
+        }
 
         return Inertia::render('Calorias/Historial', [
-            'fechas' => $fechas,
+            'fechas' => $todasLasFechas,
+            'fechasConDatos' => $fechasConDatos,
         ]);
     }
 

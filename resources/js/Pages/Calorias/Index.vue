@@ -65,6 +65,12 @@ const updateObjetivo = () => {
         },
     });
 };
+
+const deleteConsumo = (consumo) => {
+    if (confirm('¿Eliminar este consumo?')) {
+        router.delete(`/calorias/${consumo.id}`);
+    }
+};
 </script>
 
 <template>
